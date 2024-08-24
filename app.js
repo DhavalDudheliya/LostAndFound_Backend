@@ -16,7 +16,18 @@ dotenv.config();
 const connectDB = require("./config/db");
 const { use } = require("passport");
 const port = process.env.PORT || 8000;
+
 const app = express();
+app.use(express.json());
+app.use(cookieParser());
+
+app.use(
+  cors({
+    origin: process.env.CLIENT_URL,
+    credentials: true,
+  })
+);
+
 app.use(
   session({
     secret: "Our little secret.",
@@ -34,8 +45,6 @@ app.use(passport.initialize());
 app.use(passport.session());
 connectDB();
 
-app.use(express.json());
-app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/admin", require("./routes/adminRoutes"));
