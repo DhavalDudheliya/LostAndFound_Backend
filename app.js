@@ -1,34 +1,22 @@
 const express = require("express");
-const cors = require("cors");
-const cookieSession = require("cookie-session");
-const session = require("express-session");
-const cookieParser = require("cookie-parser");
-const connectDB = require("./config/db");
 const mongoose = require("mongoose");
 const colors = require("colors");
 const dotenv = require("dotenv");
+const cors = require("cors");
+const cookieSession = require("cookie-session");
+const session = require("express-session");
 const passport = require("passport");
 const Student = require("./model/studentModel");
 const jwt = require("jsonwebtoken");
-const bodyParser = require("body-parser");
+const cookieParser = require("cookie-parser");
 require("./controllers/passportConfig")(passport);
 
 dotenv.config();
 
+const connectDB = require("./config/db");
+const { use } = require("passport");
 const port = process.env.PORT || 8000;
-
 const app = express();
-app.use(express.json());
-app.use(bodyParser.json());
-app.use(cookieParser());
-
-app.use(
-  cors({
-    origin: process.env.CLIENT_URL,
-    credentials: true,
-  })
-);
-
 app.use(
   session({
     secret: "Our little secret.",
@@ -36,9 +24,18 @@ app.use(
     saveUninitialized: false,
   })
 );
+const corsOptions = {
+  origin: process.env.CLIENT_URL,
+  credentials: true,
+  optionSuccessStatus: 200,
+};
+app.use(cors(corsOptions));
 app.use(passport.initialize());
 app.use(passport.session());
+connectDB();
 
+app.use(express.json());
+app.use(cookieParser());
 app.use(express.urlencoded({ extended: false }));
 
 app.use("/admin", require("./routes/adminRoutes"));
@@ -103,5 +100,3 @@ app.post("/google-auth", passport.authenticate("google-token"), (req, res) => {
 });
 
 app.listen(port, () => console.log(`Server started on port ${port}`));
-
-connectDB();

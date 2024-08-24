@@ -8,7 +8,7 @@ const protectAdmin = async (req, res, next) => {
     // console.log("Token is from cookie" + token);
 
     const verify_token = jwt.verify(token, process.env.JWT_SECRET);
-    /*     console.log(verify_token._id); */
+    // console.log(verify_token._id);
     root_user = await Admin.findOne({
       _id: verify_token._id,
       token: token,
