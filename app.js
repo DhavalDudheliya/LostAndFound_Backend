@@ -3,7 +3,6 @@ const cors = require("cors");
 const cookieSession = require("cookie-session");
 const session = require("express-session");
 const cookieParser = require("cookie-parser");
-require("./controllers/passportConfig")(passport);
 const connectDB = require("./config/db");
 const mongoose = require("mongoose");
 const colors = require("colors");
@@ -12,6 +11,7 @@ const passport = require("passport");
 const Student = require("./model/studentModel");
 const jwt = require("jsonwebtoken");
 const bodyParser = require("body-parser");
+require("./controllers/passportConfig")(passport);
 
 dotenv.config();
 
