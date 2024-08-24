@@ -8,17 +8,18 @@ const session = require("express-session");
 const passport = require("passport");
 const Student = require("./model/studentModel");
 const jwt = require("jsonwebtoken");
+const bodyParser = require("body-parser");
 const cookieParser = require("cookie-parser");
 require("./controllers/passportConfig")(passport);
 
 dotenv.config();
 
 const connectDB = require("./config/db");
-const { use } = require("passport");
 const port = process.env.PORT || 8000;
 
 const app = express();
 app.use(express.json());
+app.use(bodyParser.json());
 app.use(cookieParser());
 
 app.use(
@@ -27,19 +28,9 @@ app.use(
     credentials: true,
   })
 );
-
-app.use(
-  session({
-    secret: "Our little secret.",
-    resave: false,
-    saveUninitialized: false,
-  })
-);
+app.use(express.urlencoded({ extended: false }));
 app.use(passport.initialize());
 app.use(passport.session());
-connectDB();
-
-app.use(express.urlencoded({ extended: false }));
 
 app.use("/admin", require("./routes/adminRoutes"));
 app.use("/coordinator", require("./routes/coordinatorRoutes"));
@@ -103,3 +94,5 @@ app.post("/google-auth", passport.authenticate("google-token"), (req, res) => {
 });
 
 app.listen(port, () => console.log(`Server started on port ${port}`));
+
+connectDB();
