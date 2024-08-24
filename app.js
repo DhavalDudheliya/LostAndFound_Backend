@@ -1,20 +1,20 @@
 const express = require("express");
-const mongoose = require("mongoose");
-const colors = require("colors");
-const dotenv = require("dotenv");
 const cors = require("cors");
 const cookieSession = require("cookie-session");
 const session = require("express-session");
+const cookieParser = require("cookie-parser");
+require("./controllers/passportConfig")(passport);
+const connectDB = require("./config/db");
+const mongoose = require("mongoose");
+const colors = require("colors");
+const dotenv = require("dotenv");
 const passport = require("passport");
 const Student = require("./model/studentModel");
 const jwt = require("jsonwebtoken");
 const bodyParser = require("body-parser");
-const cookieParser = require("cookie-parser");
-require("./controllers/passportConfig")(passport);
 
 dotenv.config();
 
-const connectDB = require("./config/db");
 const port = process.env.PORT || 8000;
 
 const app = express();
@@ -28,9 +28,18 @@ app.use(
     credentials: true,
   })
 );
-app.use(express.urlencoded({ extended: false }));
+
+app.use(
+  session({
+    secret: "Our little secret.",
+    resave: false,
+    saveUninitialized: false,
+  })
+);
 app.use(passport.initialize());
 app.use(passport.session());
+
+app.use(express.urlencoded({ extended: false }));
 
 app.use("/admin", require("./routes/adminRoutes"));
 app.use("/coordinator", require("./routes/coordinatorRoutes"));
